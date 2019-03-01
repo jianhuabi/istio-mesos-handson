@@ -1,0 +1,69 @@
+{
+    "labels": {
+      "HAPROXY_GROUP": "external",
+      "HAPROXY_0_VHOST": "",
+      "consul": ""
+    },
+    "id": "/zipkin",
+    "acceptedResourceRoles": [
+      "*"
+    ],
+    "backoffFactor": 1.15,
+    "backoffSeconds": 1,
+    "container": {
+      "portMappings": [
+        {
+          "containerPort": 9411,
+          "hostPort": 31767,
+          "protocol": "tcp",
+          "servicePort": 10005,
+          "name": "zipkinport"
+        }
+      ],
+      "type": "MESOS",
+      "volumes": [],
+      "docker": {
+        "image": "docker.io/openzipkin/zipkin:2.7",
+        "forcePullImage": false,
+        "privileged": false,
+        "parameters": []
+      }
+    },
+    "cpus": 1,
+    "disk": 0,
+    "healthChecks": [
+      {
+        "gracePeriodSeconds": 300,
+        "ignoreHttp1xx": false,
+        "intervalSeconds": 60,
+        "maxConsecutiveFailures": 3,
+        "portIndex": 0,
+        "timeoutSeconds": 20,
+        "delaySeconds": 15,
+        "protocol": "HTTP",
+        "path": "/health",
+        "ipProtocol": "IPv4"
+      }
+    ],
+    "instances": 1,
+    "maxLaunchDelaySeconds": 3600,
+    "mem": 1024,
+    "gpus": 0,
+    "networks": [
+      {
+        "mode": "container/bridge"
+      }
+    ],
+    "requirePorts": false,
+    "upgradeStrategy": {
+      "maximumOverCapacity": 1,
+      "minimumHealthCapacity": 1
+    },
+    "killSelection": "YOUNGEST_FIRST",
+    "unreachableStrategy": {
+      "inactiveAfterSeconds": 0,
+      "expungeAfterSeconds": 0
+    },
+    "fetch": [],
+    "constraints": []
+  }

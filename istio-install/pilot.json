@@ -1,0 +1,72 @@
+{
+  "id": "/pilot",
+  "backoffFactor": 1.15,
+  "backoffSeconds": 1,
+  "cmd": "mkdir -p /etc/istio/config/ && cp -f /mnt/mesos/sandbox/mesh /etc/istio/config/; /usr/local/bin/pilot-discovery discovery --httpAddr :15007 --registries Mesos --domain marathon.slave.mesos --mesosVIPDomain marathon.slave.mesos --mesosMaster http://master.mesos:8080 --kubeconfig /mnt/mesos/sandbox/kubeconfig",
+  "container": {
+    "portMappings": [
+      {
+        "containerPort": 15010,
+        "hostPort": 15010,
+        "protocol": "tcp",
+        "name": "grpc"
+      },
+      {
+        "containerPort": 15007,
+        "hostPort": 15007,
+        "protocol": "tcp",
+        "name": "http"
+      },
+      {
+        "containerPort": 9093,
+        "hostPort": 9093,
+        "protocol": "tcp",
+        "name": "http-moniter"
+      }
+    ],
+    "type": "MESOS",
+    "volumes": [],
+    "docker": {
+      "image": "hyge/pilot:eds",
+      "forcePullImage": false,
+      "parameters": []
+    }
+  },
+  "cpus": 1,
+  "disk": 0,
+  "fetch": [
+    {
+      "uri": "https://s3-ap-southeast-1.amazonaws.com/marathon-cmd/kubeconfig",
+      "extract": false,
+      "executable": false,
+      "cache": false
+    },
+    {
+      "uri": "https://s3-ap-southeast-1.amazonaws.com/marathon-cmd/mesh",
+      "extract": false,
+      "executable": false,
+      "cache": false
+    }
+  ],
+  "instances": 1,
+  "maxLaunchDelaySeconds": 3600,
+  "mem": 1024,
+  "gpus": 0,
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "requirePorts": false,
+  "upgradeStrategy": {
+    "maximumOverCapacity": 1,
+    "minimumHealthCapacity": 1
+  },
+  "killSelection": "YOUNGEST_FIRST",
+  "unreachableStrategy": {
+    "inactiveAfterSeconds": 0,
+    "expungeAfterSeconds": 0
+  },
+  "healthChecks": [],
+  "constraints": []
+}

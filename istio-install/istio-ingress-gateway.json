@@ -1,0 +1,133 @@
+{
+    "environment": {
+      "SERVICES_DOMAIN": "marathon.slave.mesos"
+    },
+    "labels": {
+      "istio": "ingressgateway"
+    },
+    "id": "/istio-ingressgateway",
+    "version": "2019-02-26T08:52:20.759Z",
+    "containers": [
+      {
+        "name": "istio-ingressgateway",
+        "resources": {
+          "cpus": 0.2,
+          "mem": 512,
+          "disk": 0,
+          "gpus": 0
+        },
+        "exec": {
+          "command": {
+            "shell": "/usr/local/bin/pilot-agent proxy  router  -v  \"2\"  --discoveryRefreshDelay  '1s'   --drainDuration  '45s'  --parentShutdownDuration  '1m0s'  --connectTimeout  '10s' --serviceregistry Mesos --serviceCluster  istio-ingressgateway  --zipkinAddress  zipkin.marathon.slave.mesos:31767 --proxyAdminPort  \"15000\"  --controlPlaneAuthPolicy  NONE  --discoveryAddress  master.mesos:15010"
+          }
+        },
+        "endpoints": [
+          {
+            "name": "http2",
+            "containerPort": 80,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "https",
+            "containerPort": 443,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "tcp",
+            "containerPort": 31400,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "tcp-pilot-grpc-tls",
+            "containerPort": 15011,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "tcp-citadel-grpc-tls",
+            "containerPort": 8060,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "tcp-dns-tls",
+            "containerPort": 853,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "http2-prometheus",
+            "containerPort": 15030,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          },
+          {
+            "name": "http2-grafana",
+            "containerPort": 15031,
+            "hostPort": 0,
+            "protocol": [
+              "tcp"
+            ]
+          }
+        ],
+        "image": {
+          "kind": "DOCKER",
+          "id": "hyge/proxy_debug:clean"
+        }
+      }
+    ],
+    "networks": [
+      {
+        "name": "mesos-bridge",
+        "mode": "container"
+      }
+    ],
+    "scaling": {
+      "instances": 1,
+      "kind": "fixed"
+    },
+    "scheduling": {
+      "backoff": {
+        "backoff": 1,
+        "backoffFactor": 1.15,
+        "maxLaunchDelay": 3600
+      },
+      "upgrade": {
+        "minimumHealthCapacity": 1,
+        "maximumOverCapacity": 1
+      },
+      "placement": {
+        "constraints": [],
+        "acceptedResourceRoles":["slave_public"]
+      },
+      "killSelection": "YOUNGEST_FIRST",
+      "unreachableStrategy": {
+        "inactiveAfterSeconds": 0,
+        "expungeAfterSeconds": 0
+      }
+    },
+    "executorResources": {
+      "cpus": 0.1,
+      "mem": 32,
+      "disk": 10
+    },
+    "volumes": [],
+    "fetch": []
+  }

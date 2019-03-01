@@ -1,0 +1,106 @@
+{
+    "id": "/zipkin",
+    "cmd": null,
+    "cpus": 0.5,
+    "mem": 1024,
+    "disk": 0,
+    "instances": 1,
+    "portDefinitions": [],
+    "acceptedResourceRoles": [
+      "*"
+    ],
+    "labels": {
+        "HAPROXY_GROUP": "external",
+        "HAPROXY_0_VHOST": ""
+    },
+    "container": {
+      "type": "DOCKER",
+      "docker": {
+        "forcePullImage": false,
+        "image": "jaegertracing/all-in-one:1.5",
+        "parameters": [],
+        "privileged": false
+      },
+      "volumes": [],
+      "portMappings": [
+        {
+          "containerPort": 9411,
+          "hostPort": 31767,
+          "labels": {},
+          "name": "zipkin",
+          "protocol": "tcp",
+          "servicePort": 10002
+        },
+        {
+          "containerPort": 16686,
+          "hostPort": 0,
+          "labels": {},
+          "name": "query-http",
+          "protocol": "tcp",
+          "servicePort": 10005
+        },
+        {
+          "containerPort": 14267,
+          "hostPort": 0,
+          "labels": {},
+          "name": "jaeger-collector-tchannel",
+          "protocol": "tcp",
+          "servicePort": 10006
+        },
+        {
+          "containerPort": 14268,
+          "hostPort": 0,
+          "labels": {},
+          "name": "jaeger-collector-http",
+          "protocol": "tcp",
+          "servicePort": 10007
+        },
+        {
+          "containerPort": 5775,
+          "hostPort": 0,
+          "labels": {},
+          "name": "agent-zipkin-thrift",
+          "protocol": "udp",
+          "servicePort": 10008
+        },
+        {
+          "containerPort": 6831,
+          "hostPort": 0,
+          "labels": {},
+          "name": "agent-compact",
+          "protocol": "tcp",
+          "servicePort": 10009
+        },
+        {
+          "containerPort": 6832,
+          "hostPort": 0,
+          "labels": {},
+          "name": "agent-binary",
+          "protocol": "tcp",
+          "servicePort": 10010
+        }
+      ]
+    },
+    "env": {
+      "COLLECTOR_ZIPKIN_HTTP_PORT": "9411",
+      "MEMORY_MAX_TRACES": "50000"
+    },
+    "healthChecks": [
+      {
+        "gracePeriodSeconds": 300,
+        "ignoreHttp1xx": false,
+        "intervalSeconds": 60,
+        "maxConsecutiveFailures": 3,
+        "path": "/",
+        "portIndex": 1,
+        "protocol": "HTTP",
+        "timeoutSeconds": 20,
+        "delaySeconds": 15
+      }
+    ],
+    "networks": [
+      {
+        "mode": "container/bridge"
+      }
+    ]
+  }

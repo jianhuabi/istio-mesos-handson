@@ -1,0 +1,78 @@
+{
+  "id": "/sleep",
+  "labels": {
+    "istio": "sleep"
+  },
+  "environment": {
+    "SERVICES_DOMAIN": "marathon.slave.mesos",
+    "ENVOY_DEBUG": "debug"
+  },
+  "containers": [
+    {
+      "name": "sleep",
+      "resources": {
+        "cpus": 0.5,
+        "mem": 256
+      },
+      "image": {
+        "id": "pstauffer/curl",
+        "kind": "DOCKER"
+      },
+      "exec": {
+        "command": {
+          "shell": "sleep 3650d"
+        }
+      },
+      "endpoints": [
+        {
+          "name": "http",
+          "containerPort": 80,
+          "hostPort": 0,
+          "protocol": [
+            "tcp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "proxy",
+      "resources": {
+        "cpus": 0.5,
+        "mem": 512
+      },
+      "image": {
+        "id": "hyge/proxy_debug:0073d41f70fad203b390161760368654a7a8b357",
+        "kind": "DOCKER"
+      },
+      "artifacts": [
+        {
+          "uri": "https://s3-ap-southeast-1.amazonaws.com/marathon-cmd/bundle-certs.tgz",
+          "extract": true,
+          "executable": false,
+          "cache": false
+        }
+      ],      
+      "exec": {
+        "command": {
+          "shell": "chmod +777 /dev/stdout; /usr/local/bin/istio-iptables.sh -p 15001 -u 1337 -m REDIRECT -i '*' -b 80;iptables -t nat -I ISTIO_OUTPUT -d 10.0.0.0/22 -p tcp -m tcp --dport 5051 -j RETURN; mkdir /etc/certs; cp ./certs/*.pem /etc/certs; chown -R istio-proxy:istio-proxy /et/certs/*.pem; su istio-proxy -c \"/usr/local/bin/pilot-agent proxy --discoveryAddress pilot.marathon.slave.mesos:15010  --domain marathon.slave.mesos --serviceregistry Mesos --serviceCluster sleep --zipkinAddress zipkin.marathon.slave.mesos:31767 --configPath /var/lib/istio --controlPlaneAuthPolicy NONE\""
+        }
+      }
+    }
+  ],
+  "scaling": {
+    "instances": 1,
+    "kind": "fixed"
+  },
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ],
+  "volumes": [],
+  "fetch": [],
+  "scheduling": {
+    "placement": {
+      "constraints": []
+    }
+  }
+}

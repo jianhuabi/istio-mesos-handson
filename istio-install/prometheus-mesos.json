@@ -1,0 +1,50 @@
+{
+    "id": "/prometheus",
+    "cmd": "/bin/prometheus --storage.tsdb.retention=6h  --config.file=/mnt/mesos/sandbox/prometheus-mesos.yaml --log.level=debug",
+    "cpus": 0.4,
+    "mem": 1024,
+    "disk": 0,
+    "instances": 1,
+    "portDefinitions": [],
+    "acceptedResourceRoles": [
+      "*"
+    ],
+    "container": {
+      "type": "MESOS",
+      "docker": {
+        "forcePullImage": false,
+        "image": "prom/prometheus:v2.3.1",
+        "parameters": [],
+        "privileged": false
+      },
+      "volumes": [],
+      "portMappings": [
+        {
+          "containerPort": 9090,
+          "hostPort": 31909,
+          "labels": {},
+          "name": "prometheus",
+          "protocol": "tcp",
+          "servicePort": 10003
+        }
+      ]
+    },
+    "fetch": [
+      {
+        "uri": "https://raw.githubusercontent.com/harryge00/mylinuxrc/master/dcos/istio/install/prometheus-mesos.yaml",
+        "extract": false,
+        "executable": false,
+        "cache": false
+      }
+    ],
+    "labels": {
+        "app": "prometheus",
+        "HAPROXY_GROUP": "external",
+        "HAPROXY_0_VHOST": ""
+    },
+    "networks": [
+      {
+        "mode": "container/bridge"
+      }
+    ]
+  }

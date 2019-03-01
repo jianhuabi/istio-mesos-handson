@@ -1,0 +1,141 @@
+{
+    "id": "/istio-telemetry",
+    "labels": {
+        "istio-mixer-type": "telemetry",
+        "istio": "istio-telemetry"
+    },
+    "environment": {
+        "SERVICES_DOMAIN": "marathon.slave.mesos",
+        "GODEBUG": "gctrace=2",
+        "POD_NAME": "istio-telemetry",
+        "POD_NAMESPACE": "default"
+    },
+    "containers": [
+        {
+            "name": "mixer",
+            "exec": {
+                "command": {
+                    "shell": "/usr/local/bin/mixs server --log_output_level default:debug,api:debug,attributes:debug,adapters:debug,grpcAdapter:debug --address unix:///sock/mixer.socket --configStoreURL=k8s:///mnt/mesos/sandbox/kubeconfig --configDefaultNamespace=default --trace_zipkin_url=http://zipkin.marathon.slave.mesos:31767/api/v1/spans"
+                }
+            },
+            "resources": {
+                "cpus": 0.5,
+                "mem": 1024,
+                "disk": 0,
+                "gpus": 0
+            },
+            "endpoints": [
+                {
+                    "name": "grpc-mixer",
+                    "containerPort": 9091,
+                    "hostPort": 31131,
+                    "protocol": [
+                        "tcp"
+                    ]
+                },
+                {
+                    "name": "grpc-mixer-mtls",
+                    "containerPort": 15004,
+                    "hostPort": 31504,
+                    "protocol": [
+                        "tcp"
+                    ]
+                },
+                {
+                    "name": "http-monitoring",
+                    "containerPort": 9093,
+                    "hostPort": 31093,
+                    "protocol": [
+                        "tcp"
+                    ]
+                },
+                {
+                    "name": "prometheus",
+                    "containerPort": 42422,
+                    "hostPort": 31422,
+                    "protocol": [
+                        "tcp"
+                    ]
+                }
+            ],
+            "image": {
+                "kind": "DOCKER",
+                "id": "hyge/mixer_debug:mesosenv2"
+            },
+            "volumeMounts": [
+                {
+                    "name": "uds-socket",
+                    "mountPath": "/sock"
+                }
+            ],
+            "artifacts": [
+                {
+                    "uri": "https://gist.githubusercontent.com/harryge00/09fed16607a25c47952047d8d7983fe2/raw/3d856e99a9a215c0b5cb0daa4c819745cd35c327/kubeconfig",
+                    "extract": true,
+                    "executable": false,
+                    "cache": false
+                }
+            ]
+        },
+        {
+            "name": "proxy",
+            "exec": {
+                "command": {
+                    "shell": "/usr/local/bin/pilot-agent proxy --serviceCluster istio-telemetry --domain marathon.slave.mesos --serviceregistry Mesos --templateFile /etc/istio/proxy/envoy_telemetry_mesos.yaml.tmpl --controlPlaneAuthPolicy NONE"
+                }
+            },
+            "resources": {
+                "cpus": 0.5,
+                "mem": 1024,
+                "disk": 0,
+                "gpus": 0
+            },
+            "image": {
+                "kind": "DOCKER",
+                "id": "hyge/proxy_debug:mixer",
+                "forcePull": true
+            },
+            "volumeMounts": [
+                {
+                    "name": "uds-socket",
+                    "mountPath": "/sock"
+                }
+            ]
+        }
+    ],
+    "volumes": [
+        {
+            "name": "uds-socket"
+        }
+    ],
+    "networks": [
+        {
+          "mode": "container/bridge"
+        }
+    ],
+    "scaling": {
+        "kind": "fixed",
+        "instances": 1
+    },
+    "scheduling": {
+        "backoff": {
+            "backoff": 1,
+            "backoffFactor": 1.15,
+            "maxLaunchDelay": 3600
+        },
+        "upgrade": {
+            "minimumHealthCapacity": 1,
+            "maximumOverCapacity": 1
+        },
+        "killSelection": "YOUNGEST_FIRST",
+        "unreachableStrategy": {
+            "inactiveAfterSeconds": 0,
+            "expungeAfterSeconds": 0
+        }
+    },
+    "executorResources": {
+        "cpus": 0.1,
+        "mem": 32,
+        "disk": 10
+    }
+}
