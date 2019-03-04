@@ -18,7 +18,7 @@
         },
         "exec": {
           "command": {
-            "shell": "/usr/local/bin/pilot-agent proxy  router  -v  \"2\"  --discoveryRefreshDelay  '1s'   --drainDuration  '45s'  --parentShutdownDuration  '1m0s'  --connectTimeout  '10s' --serviceregistry Mesos --serviceCluster  istio-ingressgateway  --zipkinAddress  zipkin.marathon.slave.mesos:31767 --proxyAdminPort  \"15000\"  --controlPlaneAuthPolicy  NONE  --discoveryAddress  master.mesos:15010"
+            "shell": "/usr/local/bin/pilot-agent proxy  router  -v  \"2\"  --discoveryRefreshDelay  '1s'   --drainDuration  '45s'  --parentShutdownDuration  '1m0s'  --connectTimeout  '10s' --serviceregistry Mesos --serviceCluster  istio-ingressgateway  --zipkinAddress  zipkin.marathon.slave.mesos:31767 --proxyAdminPort  \"15000\"  --controlPlaneAuthPolicy  NONE  --discoveryAddress  pilot.marathon.slave.mesos:15010"
           }
         },
         "endpoints": [
@@ -95,10 +95,9 @@
     ],
     "networks": [
       {
-        "name": "mesos-bridge",
-        "mode": "container"
+        "mode": "container/bridge"
       }
-    ],
+  ],
     "scaling": {
       "instances": 1,
       "kind": "fixed"

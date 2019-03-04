@@ -43,7 +43,7 @@
         },
         "exec": {
           "command": {
-            "shell": "chmod +777 /dev/stdout; /usr/local/bin/istio-iptables.sh -p 15001 -u 1337 -m REDIRECT -i '*' -b 9080; iptables -t nat -I ISTIO_OUTPUT -d 10.0.0.0/22 -p tcp -m tcp --dport 5051 -j RETURN; su istio-proxy -c \"/usr/local/bin/pilot-agent proxy --discoveryAddress master.mesos:15010  --domain marathon.slave.mesos --serviceregistry Mesos --serviceCluster reviews-v3 --zipkinAddress zipkin.marathon.slave.mesos:31767 --configPath /var/lib/istio\""
+            "shell": "chmod +777 /dev/stdout; /usr/local/bin/istio-iptables.sh -p 15001 -u 1337 -m REDIRECT -i '*' -b 9080; iptables -t nat -I ISTIO_OUTPUT -d 10.0.0.0/22 -p tcp -m tcp --dport 5051 -j RETURN; su istio-proxy -c \"/usr/local/bin/pilot-agent proxy --discoveryAddress pilot.marathon.slave.mesos:15010  --domain marathon.slave.mesos --serviceregistry Mesos --serviceCluster reviews-v3 --zipkinAddress zipkin.marathon.slave.mesos:31767 --configPath /var/lib/istio\""
           }
         },
         "image": {
@@ -54,8 +54,7 @@
     ],
     "networks": [
       {
-        "name": "mesos-bridge",
-        "mode": "container"
+        "mode": "container/bridge"
       }
     ],
     "scaling": {
