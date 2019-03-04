@@ -602,7 +602,7 @@ Then you should be able to get response from **httpbin**.
 > kubectl delete meshpolicy default
 ```
 
-### Enable mutual TLS service
+### Enable mutual TLS per service
 
 You can also set authentication policy and destination rule for a specific service. Run this command to set another policy only for **httpbin** service.
 
